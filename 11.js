@@ -2,6 +2,8 @@
 // https://leetcode.com/problems/valid-anagram/
 
 const isAnagram = (s, t) => {
+    if(s === "" || t === "") return true;
+    if(s.length !== t.length) return false;
     const map = {};
     for(let i = 0; i < s.length; i++) {
         if(!map[s[i]]) map[s[i]] = 0;
