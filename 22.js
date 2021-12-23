@@ -10,8 +10,10 @@
 // };
 
 //2
-const isPowerOfThree = n => {
-    return (n % 3 !== 0 || n < 1) ? n === 1 : isPowerOfThree(n / 3)
-}
+// const isPowerOfThree = n => {
+//     return (n % 3 !== 0 || n < 1) ? n === 1 : isPowerOfThree(n / 3)
+// }
 
-console.log(isPowerOfThree(0));
+// console.log(isPowerOfThree(0));
+
+
