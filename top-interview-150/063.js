@@ -1,53 +1,68 @@
 /**
- * @param {number[][]} matrix
- * @return {number[]}
+ * @param {number[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
  */
-var spiralOrder = function (matrix) {
-  let arr = [];
-  let r = matrix.length;
-  let c = matrix[0].length;
-  let direction = 0;
-  let left = 0;
-  let right = c - 1;
-  let bottom = 0;
-  let top = r - 1;
-
-  while (arr.length < r * c) {
-    if (direction == 0) {
-      for (let i = left; i <= right; i++) {
-        arr.push(matrix[bottom][i]);
-      }
-      bottom++;
-      direction++;
-    } else if (direction == 1) {
-      for (let i = bottom; i <= top; i++) {
-        arr.push(matrix[i][right]);
-      }
-      right--;
-      direction++;
-    } else if (direction == 2) {
-      for (let i = right; i >= left; i--) {
-        arr.push(matrix[top][i]);
-      }
-      top--;
-      direction++;
-    } else if (direction == 3) {
-      for (let i = top; i >= bottom; i--) {
-        arr.push(matrix[i][left]);
-      }
-      left++;
-      direction++;
+var gameOfLife = function (board) {
+  // Assign cells placeholder values if they need to change state
+  for (let y = 0; y < board.length; ++y) {
+    for (let x = 0; x < board[0].length; ++x) {
+      let status = getCellStatus(board, x, y);
+      board[y][x] = status;
     }
-    if (direction == 4) direction = 0;
   }
-  return arr;
+
+  // Change cells with placeholder values to actual final value
+  for (let y = 0; y < board.length; ++y) {
+    for (let x = 0; x < board[0].length; ++x) {
+      if (board[y][x] == -1) board[y][x] = 1; // 0 -> 1
+      else if (board[y][x] == 2) board[y][x] = 0; // 1->0
+    }
+  }
+};
+
+let getCellStatus = function (board, x, y) {
+  let neighborCount = getNeighborCount(board, x, y);
+  let cellStatus = board[y][x];
+  // If a cell goes 1->0, assign value 2. If cell goes 0->1, assign -1
+  if (cellStatus === 1) {
+    if (neighborCount < 2 || neighborCount > 3) cellStatus = 2;
+  } else {
+    if (neighborCount === 3) cellStatus = -1;
+  }
+  return cellStatus;
+};
+
+let getNeighborCount = function (board, x, y) {
+  let width = board[0].length;
+  let height = board.length;
+  let leftBound = 0;
+  let rightBound = width - 1;
+  let bottomBound = 0;
+  let topBound = height - 1;
+  let count = 0;
+  // Assigning 2 to cells going 1->0 and -1 for cells going 0->1 allows us to just
+  // test neighbors for being > 0
+  if (x - 1 >= leftBound && y + 1 <= topBound && board[y + 1][x - 1] > 0)
+    count += 1; // Diag up-left
+  if (x + 1 <= rightBound && y + 1 <= topBound && board[y + 1][x + 1] > 0)
+    count += 1; // Diag up-right
+  if (x - 1 >= leftBound && y - 1 >= bottomBound && board[y - 1][x - 1] > 0)
+    count += 1; // Diag down-left
+  if (x + 1 <= rightBound && y - 1 >= bottomBound && board[y - 1][x + 1] > 0)
+    count += 1; // Diag down-right
+  if (y + 1 <= topBound && board[y + 1][x] > 0) count += 1; // Up
+  if (y - 1 >= bottomBound && board[y - 1][x] > 0) count += 1; // Down
+  if (x + 1 <= rightBound && board[y][x + 1] > 0) count += 1; // Right
+  if (x - 1 >= leftBound && board[y][x - 1] > 0) count += 1; // Left
+  return count;
 };
 
 console.log(
-  spiralOrder([
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
+  getNeighborCount([
+    [0, 1, 0],
+    [0, 0, 1],
+    [1, 1, 1],
+    [0, 0, 0],
   ])
 );
-//Output: [1,2,3,6,9,8,7,4,5]
+// [[0,0,0],[1,0,1],[0,1,1],[0,1,0]]
